@@ -6,7 +6,7 @@ import sys
 
 def validate_cidr(cidr):
     
-    #`ipaddress.ip_network` is used to parse the cidr string and verify that it is in the valid cidr notation.
+    #`ipaddress.ip_network` is from the ipaddress module and is used to parse the cidr string and verify that it is in the valid cidr notation.
     #If it is the right notation then `network` will hold it if not network will be "None"
     try:
         return ipaddress.ip_network(cidr, strict=False)
@@ -45,6 +45,8 @@ def ping_host(ip):
         stdoutresult = result.stdout.lower()
         if "request timed out" in stdoutresult or "timed out" in stdoutresult:
             return "DOWN", "No response"
+        else:
+            return "DOWN", "Unreachable"
             
 
 def scan_network(cidr):
@@ -65,7 +67,7 @@ def scan_network(cidr):
     down_count = 0 
     error_count = 0 
 
-    #Use a for loop to go through all the IPs in the range in the range and use the `ping_host()` function on them.
+    #Use a for loop to go through all the IPs in the range and use the `ping_host()` function on each one of them.
     #Also have two variables for the status of the IP and the extra info that we specified earlier such as the response time or any errors.
     #Then use if statements to print what we want for each of the cases.
     for host in network.hosts():
@@ -84,11 +86,8 @@ def scan_network(cidr):
     print(f"\nScan complete. Found {up_count} active hosts, {down_count} down, {error_count} errors")
 
 if __name__ == "__main__":
-    
+    #This code handles command line input from the user.
     parser = argparse.ArgumentParser(description="Scan IP addresses within a CIDR range.")
-    
     parser.add_argument("cidr", help="The CIDR notation of the network to scan")
-    
     args = parser.parse_args()
-    
     scan_network(args.cidr)
